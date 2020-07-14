@@ -1,0 +1,61 @@
+#include<bits/stdc++.h>
+#define bst           ios_base::sync_with_stdio(0);
+#define bug(x)        cerr<<#x<<'='<<x<<endl;
+#define ll            long long int
+#define eb            emplace_back
+#define pb            push_back
+#define inp(n)        scanf("%lld", &n);
+using namespace std;
+vector<ll> divisors[100999];
+bool check[100999]={};
+int main(){
+    ll i, j, k, l, nax=100999;
+    
+    for(i=2; i<nax; i++){
+        if(check[i]==false){
+            for(j=i; j<nax; j+=i){
+                check[j]=true;
+                divisors[j].eb(i);
+            }
+        }
+    }
+    ll t;
+    scanf("%lld", &t);
+    while(t--){
+        ll n, a, b;
+        scanf("%lld %lld %lld", &n, &a, &b);
+        if(a==0){
+            cout<<1<<endl;
+            continue;
+        }
+        ll ans=1;  ///  0/1
+        for(i=2; i<=n; i++){
+            ll keep=a*i;
+            k=keep/b;
+            if(keep%b==0) k--;
+            k=min(k, i);
+            ll limit=divisors[i].size();
+            vector<ll> temp;
+            temp.eb(1);
+            for(j=0; j<limit; j++){
+                ll num=divisors[i][j];
+                ll siz=temp.size();
+                for(l=0; l<siz; l++){
+                    ll rakhbo=temp[l]*num*(-1);
+                    temp.eb(rakhbo);
+                }
+            }
+            ll siz=temp.size();
+            ll divv=k;
+            for(j=1; j<siz; j++){
+                ll rakhbo=divv/temp[j];
+                k+=rakhbo;
+            }
+            ans+=k;
+        }
+        
+        cout<<ans+1<<endl;
+        
+    }
+    return 0;
+}
