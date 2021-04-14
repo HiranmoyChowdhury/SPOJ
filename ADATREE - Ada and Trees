@@ -1,0 +1,82 @@
+#include<bits/stdc++.h>
+#define bst           (ios_base:: sync_with_stdio(false),cin.tie(NULL));
+#define bug(x)        cerr<<#x<<'='<<x<<endl;
+#define lp(i,a,b)     for(int i=a; i<=b; i++)
+#define ll            long long int
+#define eb            emplace_back
+#define pb            push_back
+#define inp(n)        scanf("%d", &n)
+using namespace std;
+int N, Q, A[300099];
+vector<int> pos[1000099];
+int mx[2000000];
+int change, num;
+int lft, rght;
+void update(int idx, int l, int r){
+    if(change>r || change<l) return;
+    mx[idx]=num;
+    if(l==r) return;
+    int mid=(l+r)/2;
+    update(idx+idx, l, mid);
+    update(idx+idx+1, mid+1, r);
+}
+int find(int idx, int l, int r){
+    if(l>rght || r<lft) return 0;
+    if(rght>=r && lft<=l) return mx[idx];
+    int mid=(l+r)/2;
+    int ret=max(find(idx+idx, l, mid), find(idx+idx+1, mid+1, r));
+
+    return ret;
+}
+
+int main(){
+    inp(N); inp(Q);
+    for(int i=0; i<N; i++){
+        inp(A[i]);
+        pos[A[i]].eb(i);
+    }
+
+    for(int i=0; i<=N+N+N+N; i++) mx[i]=0;
+
+    vector<pair<pair<int, int>, pair<int, int>>> query;
+
+    for(int i=0; i<Q; i++){
+        int l, r, h;
+        scanf("%d %d %d", &l, &r, &h);
+        query.pb({{h, i}, {l, r}});
+    }
+    sort(query.begin(), query.end());
+
+    int cur_query=0;
+
+    int ans[Q+1]={};
+
+    for(int i=0; i<=1000000; i++){
+        int siz=pos[i].size();
+        num=i;
+        for(int j=0; j<siz; j++){
+            change=pos[i][j];
+            update(1, 0, N-1);
+        }
+        int height=query[cur_query].first.first;
+
+        while(height<=i){
+            int cur_pos=query[cur_query].first.second;
+            lft=query[cur_query].second.first;
+            rght=query[cur_query].second.second;
+
+            ans[cur_pos]=find(1, 0, N-1);
+
+
+            cur_query++;
+            if(cur_query>=Q) break;
+            height=query[cur_query].first.first;
+        }
+        if(cur_query>=Q) break;
+    }
+
+    for(int i=0; i<Q; i++){
+        cout<<ans[i]<<endl;
+    }
+    return 0;
+}
